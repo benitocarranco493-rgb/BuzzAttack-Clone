@@ -3,10 +3,12 @@ import { describe, expect, it } from 'vitest';
 import {
   categoriesPickSchema,
   categorySchema,
+  hostRejoinSchema,
   questionSchema,
   roomCodeSchema,
   roomJoinSchema,
   nicknameSchema,
+  teamChooseSchema,
 } from './schemas.js';
 
 describe('schemas de sala', () => {
@@ -38,6 +40,20 @@ describe('schemas de sala', () => {
     expect(categoriesPickSchema.safeParse({ categoryIds: ['a', 'b', 'c', 'd'] }).success).toBe(
       false,
     );
+  });
+  it('valida el payload de host:rejoin', () => {
+    expect(hostRejoinSchema.safeParse({ code: 'ABCD', hostToken: 'tok-1' }).success).toBe(true);
+    expect(hostRejoinSchema.safeParse({ code: 'ABCO', hostToken: 'tok-1' }).success).toBe(false);
+    expect(hostRejoinSchema.safeParse({ code: 'ABCD' }).success).toBe(false);
+  });
+
+  it('team:choose exige teamId o newTeamName, pero no ambos', () => {
+    expect(teamChooseSchema.safeParse({ teamId: 'team-1' }).success).toBe(true);
+    expect(teamChooseSchema.safeParse({ newTeamName: 'Los Rojos' }).success).toBe(true);
+    expect(teamChooseSchema.safeParse({ teamId: 'team-1', newTeamName: 'Los Rojos' }).success).toBe(
+      false,
+    );
+    expect(teamChooseSchema.safeParse({}).success).toBe(false);
   });
 });
 

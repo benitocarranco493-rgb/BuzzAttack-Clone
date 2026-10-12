@@ -1,10 +1,11 @@
-import type { Phase, Team } from './types.js';
+import type { Category, Phase, Team } from './types.js';
 
 /** Nombres de eventos (contrato mínimo, sección 7 de instructions.md). */
 export const EVENTS = {
   'room:create': 'room:create',
   'room:join': 'room:join',
   'room:rejoin': 'room:rejoin',
+  'host:rejoin': 'host:rejoin',
   'team:choose': 'team:choose',
   'categories:pick': 'categories:pick',
   'game:start': 'game:start',
@@ -40,9 +41,14 @@ export type Ack<T> = { ok: true; data: T } | { ok: false; error: ServerErrorPayl
 
 export interface RoomCreateAckData {
   code: string;
+  hostToken: string;
 }
 export interface RoomJoinAckData {
   playerToken: string;
+  playerId: string;
+}
+export interface HostRejoinAckData {
+  code: string;
 }
 
 /** Datos de jugador públicos (nunca se envía su token ni respuestas privadas). */
@@ -51,6 +57,7 @@ export interface PublicPlayer {
   nickname: string;
   teamId: string;
   connected: boolean;
+  specialistCategoryIds: string[];
 }
 
 /** Estado público completo de la sala (state:sync). */
@@ -60,6 +67,10 @@ export interface StateSyncPayload {
   paused: boolean;
   players: PublicPlayer[];
   teams: Team[];
+  availableCategories: Category[];
+  minPlayers: number;
+  connectedPlayers: number;
+  canStart: boolean;
 }
 
 export interface RoomCreatePayload {
@@ -72,6 +83,10 @@ export interface RoomJoinPayload {
 export interface RoomRejoinPayload {
   code: string;
   playerToken: string;
+}
+export interface HostRejoinPayload {
+  code: string;
+  hostToken: string;
 }
 export interface TeamChoosePayload {
   teamId?: string;
@@ -139,6 +154,7 @@ export interface ClientToServerEvents {
   'room:create': (payload: RoomCreatePayload, ack: (res: Ack<RoomCreateAckData>) => void) => void;
   'room:join': (payload: RoomJoinPayload, ack: (res: Ack<RoomJoinAckData>) => void) => void;
   'room:rejoin': (payload: RoomRejoinPayload, ack: (res: Ack<RoomJoinAckData>) => void) => void;
+  'host:rejoin': (payload: HostRejoinPayload, ack: (res: Ack<HostRejoinAckData>) => void) => void;
   'team:choose': (payload: TeamChoosePayload) => void;
   'categories:pick': (payload: CategoriesPickPayload) => void;
   'game:start': () => void;

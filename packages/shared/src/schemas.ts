@@ -90,10 +90,19 @@ export const roomRejoinSchema = z.object({
   playerToken: playerTokenSchema,
 });
 
-export const teamChooseSchema = z.object({
-  teamId: z.string().min(1).optional(),
-  newTeamName: z.string().trim().min(2).max(14).optional(),
+export const hostRejoinSchema = z.object({
+  code: roomCodeSchema,
+  hostToken: playerTokenSchema,
 });
+
+export const teamChooseSchema = z
+  .object({
+    teamId: z.string().min(1).optional(),
+    newTeamName: z.string().trim().min(2).max(14).optional(),
+  })
+  .refine((value) => (value.teamId !== undefined) !== (value.newTeamName !== undefined), {
+    message: 'Se requiere teamId o newTeamName, pero no ambos',
+  });
 
 export const categoriesPickSchema = z.object({
   categoryIds: z.array(z.string().min(1)).length(3),

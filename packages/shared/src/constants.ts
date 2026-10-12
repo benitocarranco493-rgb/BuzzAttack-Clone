@@ -28,6 +28,11 @@ export const RECONNECT_GRACE_MS = 5 * 60 * 1000;
 export const EVENT_RATE_LIMIT_PER_SEC = 10;
 export const TAP_RATE_LIMIT_PER_SEC = 8;
 
+/** Límite de salas creadas por IP (misma ventana de 1 hora). */
+export const ROOM_CREATE_LIMIT_PER_HOUR = 10;
+/** Cada cuánto se limpian las salas caducadas. */
+export const ROOM_CLEANUP_INTERVAL_MS = 60 * 1000;
+
 export const ANSWER_OPTIONS_COUNT = 4;
 export const MIN_QUESTION_TEXT_LENGTH = 1;
 export const MAX_QUESTION_TEXT_LENGTH = 160;
