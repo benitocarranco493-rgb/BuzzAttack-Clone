@@ -1,0 +1,15 @@
+# Normaliza todos los textos a LF (independiente del SO)
+* text=auto eol=lf
+
+# Binarios (se mantienen tal cual)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.mp3 binary
+*.mp4 binary
+*.wav binary
+*.ogg binary
+*.zip binary
