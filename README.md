@@ -13,7 +13,7 @@ y cada jugador usa su **móvil como podio**. 2–12 jugadores, red local (LAN), 
 
 - ✅ **Fase 0 (andamiaje):** monorepo pnpm, TypeScript estricto, ESLint/Prettier, Vitest,
   `packages/shared` (tipos + Zod + contrato de eventos), servidor Fastify + Socket.IO con
-  `/api/health`, cliente Vite + React mínimo, Docker, CI, `validate:content`.
+  `/api/health`, cliente Vite + React mínimo, despliegue en Vercel, CI, `validate:content`.
 - ⏳ **Fase 1 (salas y lobby):** siguiente.
 
 ## Requisitos
@@ -45,17 +45,23 @@ content/           Preguntas y configuración por datos (se crea en la Fase 6)
 scripts/           validate-content.ts (y generador de preguntas en v1.1)
 ```
 
-## Despliegue casero (Docker)
+## Despliegue en Vercel (frontend)
 
-```bash
-cp .env.example .env
-docker compose up -d --build
-# Abre http://<IP-del-PC>:3000/
-```
+1. Importa el repositorio en https://vercel.com/new (desde GitHub).
+2. Vercel lee `vercel.json` (raíz): build `pnpm --filter @buzz/web build`,
+   salida `apps/web/dist` y fallback SPA para `/host`, `/play`, etc.
+3. La web queda publicada en `https://<proyecto>.vercel.app`.
 
-La imagen contiene API, WebSocket y los estáticos del cliente. El servidor autodetecta la IP
-local para el QR de la sala (Fase 1). Para jugar con amigos remotos: Cloudflare Tunnel o ngrok
-(con HTTPS se habilita además el Screen Wake Lock).
+El frontend es **estático**; el juego real (puntuación, salas, Socket.IO) no puede vivir
+en Vercel: sus WebSockets están en beta con conexiones máximas de 300 s (Hobby) y sin estado
+compartido entre instancias ([referencia](https://vercel.com/docs/functions/websockets)).
+Por eso el **servidor autoritativo se ejecuta como proceso Node persistente**:
+
+- **En casa (LAN):** `pnpm dev` (o `pnpm build && pnpm --filter @buzz/server start`).
+  El servidor autodetecta la IP local para el QR de la sala.
+- **Con amigos remotos:** arranca el servidor en una VPS (o con Cloudflare Tunnel/ngrok
+  apuntando a tu PC) y configura `CORS_ORIGIN=https://<proyecto>.vercel.app` en el servidor.
+  A partir de la Fase 1, el cliente leerá la URL del servidor desde una variable de entorno.
 
 ## Arquitectura (reglas que no se rompen)
 

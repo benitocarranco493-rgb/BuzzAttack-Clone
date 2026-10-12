@@ -27,7 +27,7 @@ Se actualiza cuando una decisión cambia el comportamiento o el "cómo se trabaj
 
 - **Contexto:** no hay un build "de servidor" necesario porque todos los paquetes son fuente.
 - **Decisión:** scripts `dev` = `tsx watch`, `start` = `tsx`, `build` = `tsc --noEmit`.
-  Docker arranca con `pnpm --filter @buzz/server start`.
+  El arranque en producción usa `pnpm --filter @buzz/server start` (hasta el 12-10-2026 desde Docker; ver decisión 9).
 - **Alternativas:** emitir `dist/` con tsc y resolver `@buzz/shared` en runtime
   (rompía la resolución del paquete fuente); esbuild/tsup como paso extra. Descartadas.
 - **Nota:** el arranque en frío es algo más lento; irrelevante en LAN doméstica.
@@ -67,6 +67,22 @@ Se actualiza cuando una decisión cambia el comportamiento o el "cómo se trabaj
 
 - **Contexto:** AGENTS §3 pide versiones exactas (`save-exact`).
 - **Decisión:** todas las dependencias están fijadas sin `^`. Verificadas con `npm view` el 12-10-2026.
+
+### 9. Despliegue en Vercel; se retira Docker
+
+- **Contexto:** `instructions.md` §16 proponía Docker/compose para producción casera. El usuario
+  decidió desplegar la app en **vercel.app** y retirar Docker si no era necesario.
+- **Decisión:** `apps/web` se publica como sitio **estático** en Vercel (`vercel.json` en la raíz:
+  `pnpm --filter @buzz/web build`, `outputDirectory: apps/web/dist`, fallback SPA). Se eliminan
+  `Dockerfile`, `docker-compose.yml` y `.dockerignore`. El **servidor autoritativo** de juego se
+  mantiene como proceso Node persistente (LAN en casa o VPS + Cloudflare Tunnel para remoto)
+  porque los WebSockets de Vercel están en beta pública con límites incompatibles con una partida
+  de ~60 min: conexiones máximas de 300 s en Hobby y sin estado compartido entre instancias
+  (habría que persistir cada sala en Redis y tolerar caídas de conexión continuas).
+- **Alternativas:** conservar Docker; usar la beta de WebSockets de Vercel con estado externo
+  (Redis/Upstash) — coste y riesgo altos para el modelo en memoria de `instructions.md` §4.
+- **Revisar:** cuando la beta de WebSockets de Vercel madure (límites y estado compartido)
+  o si el usuario prefiere una VPS para todo.
 
 ---
 

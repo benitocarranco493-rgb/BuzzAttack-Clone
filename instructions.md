@@ -185,7 +185,7 @@ Principios:
 | QR | `qrcode` / `qrcode.react` | Código de sala |
 | Tests | **Vitest** (unidad) + **Playwright** (e2e multi-contexto) | Cobertura de lógica y flujo |
 | Lint | ESLint + Prettier | — |
-| Contenedor | Docker + docker-compose | Despliegue doméstico |
+| Contenedor | ~~Docker + docker-compose~~ → Vercel (estáticos) + proceso Node para el servidor | Frontend en vercel.app; servidor de tiempo real persistente (decisión 12-10-2026) |
 
 ---
 
@@ -197,7 +197,7 @@ buzz-home/
 ├─ pnpm-workspace.yaml
 ├─ README.md   DECISIONS.md   instructions.md
 ├─ .env.example
-├─ docker-compose.yml  Dockerfile
+├─ vercel.json
 ├─ apps/
 │  ├─ server/
 │  │  └─ src/
@@ -543,7 +543,7 @@ Plató retro de TV: fondo oscuro, **neón** (magenta/cian/amarillo), focos, barr
 
 - **Desarrollo:** `pnpm dev` levanta servidor (puerto 3000) y Vite con `--host` para acceso desde móviles.
 - **LAN:** el servidor detecta su IP local (`os.networkInterfaces()`) y la usa para generar el **QR** (`http://192.168.x.x:3000/play?code=ABCD`). Documentar firewall (permitir puerto 3000) y que móviles y host deben estar en la misma Wi-Fi (sin "aislamiento de clientes").
-- **Producción casera:** `docker compose up` (imagen Node multi-stage; un solo contenedor sirve API, WebSocket y estáticos).
+- **Producción casera:** **[Decisión 12-10-2026]** la web se despliega en **Vercel** (estáticos, `vercel.json` en la raíz) y el servidor de tiempo real se ejecuta como proceso Node persistente (`pnpm --filter @buzz/server start`); se retiró Docker por no ser necesario. Detalle y motivos en `DECISIONS.md` §9.
 - **Jugar con amigos remotos / HTTPS:** exponer con **Cloudflare Tunnel** (https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) o ngrok; con HTTPS se habilita Wake Lock. Activar CORS restrictivo y limitar creación de salas.
 - **Variables (`.env.example`):** `PORT`, `PUBLIC_BASE_URL`, `DEFAULT_LANG=es`, `ENABLE_ROWDY=false`, `ANTHROPIC_API_KEY` (opcional), `ANTHROPIC_MODEL` (opcional).
 - Códigos de sala: 4 letras sin caracteres ambiguos; caducan tras 3 h de inactividad.
@@ -579,7 +579,7 @@ Plató retro de TV: fondo oscuro, **neón** (magenta/cian/amarillo), focos, barr
 
 Cada fase termina con código funcionando, tests y un commit etiquetado.
 
-**Fase 0 — Andamiaje.** Monorepo, TS estricto, ESLint/Prettier, Vitest, Docker, endpoint de salud, `shared` con tipos y Zod, CI.
+**Fase 0 — Andamiaje.** Monorepo, TS estricto, ESLint/Prettier, Vitest, config de despliegue en Vercel, endpoint de salud, `shared` con tipos y Zod, CI.
 
 **Fase 1 — Salas y lobby.** Crear sala, código, QR, unión móvil, reconexión por token, equipos (1–3), 6 podios, elección de 3 categorías, pantalla de lobby del host.
 
@@ -593,7 +593,7 @@ Cada fase termina con código funcionando, tests y un commit etiquetado.
 
 **Fase 6 — Contenido y herramientas.** Ampliar banco a ≥ 300 preguntas, `validate-content`, `generate-questions` con Claude + cola de revisión en `/admin`, historial SQLite.
 
-**Fase 7 — Pack Madrid y empaquetado.** `nameThatTune`, `fairPrice`, `buzzIn`; Docker final; guía de Cloudflare Tunnel; README definitivo.
+**Fase 7 — Pack Madrid y empaquetado.** `nameThatTune`, `fairPrice`, `buzzIn`; despliegue en Vercel; guía de Cloudflare Tunnel; README definitivo.
 
 ---
 
