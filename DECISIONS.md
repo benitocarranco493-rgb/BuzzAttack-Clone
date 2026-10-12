@@ -1,0 +1,82 @@
+# DECISIONS.md
+
+Registro de decisiones de diseño (contexto → decisión → alternativas descartadas).
+Se actualiza cuando una decisión cambia el comportamiento o el "cómo se trabaja".
+
+---
+
+## 2026-10-12 — Fase 0: decisiones de andamiaje
+
+### 1. Nombre y marca
+
+- **Contexto:** `instructions.md` §19 prohíbe usar la marca "BuzzAttack". El nombre es provisional.
+- **Decisión:** "Buzz Home", en `APP_NAME` de `packages/shared/src/constants.ts` (configurable).
+- **Alternativas:** sin nombre, "Room Quiz". Descartadas por claridad del README.
+
+### 2. `packages/shared` como paquete fuente (sin build propio)
+
+- **Contexto:** el servidor y la web necesitan compartir tipos/esquemas; un `dist/` añade un paso
+  de compilación y posibles carreras en desarrollo.
+- **Decisión:** `main`/`types`/`exports` apuntan a `src/index.ts`. `tsx` (servidor) y Vite (web)
+  transpilan el TypeScript directamente. `pnpm build` de `shared` = `tsc --noEmit`.
+- **Alternativas:** compilación a `dist/` con composite/project references (más pasos y estados
+  intermedios); bundles con tsup (dependencia extra sin beneficio real para una LAN).
+- **Riesgo:** puede ser frágil si alguna herramienta espera `dist/`; mitigación: `exports` explícito.
+
+### 3. El servidor se ejecuta con `tsx` también en producción
+
+- **Contexto:** no hay un build "de servidor" necesario porque todos los paquetes son fuente.
+- **Decisión:** scripts `dev` = `tsx watch`, `start` = `tsx`, `build` = `tsc --noEmit`.
+  Docker arranca con `pnpm --filter @buzz/server start`.
+- **Alternativas:** emitir `dist/` con tsc y resolver `@buzz/shared` en runtime
+  (rompía la resolución del paquete fuente); esbuild/tsup como paso extra. Descartadas.
+- **Nota:** el arranque en frío es algo más lento; irrelevante en LAN doméstica.
+
+### 4. TypeScript 5.9.3 en lugar de 7.0.2
+
+- **Contexto:** la `latest` de TS es 7.x (compilador nativo), pero `typescript-eslint` 8.71.1
+  declara peer `typescript >=4.8.4 <6.1.0`.
+- **Decisión:** fijar `typescript@5.9.3` (último 5.x). Revisar cuando el ecosistema soporte TS 7.
+- **Alternativas:** TS 7 con `tsc --noEmit` pero sin lint; descartada porque el lint es obligatorio.
+
+### 5. Convención de imports
+
+- **Contexto:** ESM en Node 24 + tsx + Vite admiten resoluciones distintas.
+- **Decisión:** en `apps/server` y `packages/shared` imports con extensión `.js` (estándar ESM,
+  compatible con tsx, Vite y `moduleResolution: Bundler`). En `apps/web`, imports sin extensión
+  (convención Vite).
+- **Alternativas:** extensionless en todo (frágil en tsx); `.ts` explícito (requiere
+  `allowImportingTsExtensions` y rompe en algunos empaquetadores).
+
+### 6. Helmet y CORS en Fase 0
+
+- **Contexto:** AGENTS exige cabeceras de seguridad y CORS restrictivo.
+- **Decisión:** Helmet activo con `contentSecurityPolicy: false` de momento (SPA servida por
+  Fastify; revisar/activar CSP antes de exponer la app a internet). CORS solo si se define
+  `CORS_ORIGIN` (por defecto mismo origen; en desarrollo Vite usa proxy).
+- **Alternativas:** CSP completa desde el inicio (rompe scripts/estilos inline de Vite en dev).
+
+### 7. `validate:content` desde la Fase 0
+
+- **Contexto:** AGENTS pide el comando y `instructions.md` §18 lo sitúa en la Fase 6.
+- **Decisión:** implementar ya la parte que depende solo de `packages/shared` (esquemas,
+  IDs únicos, opciones únicas, mínimos d1/d2/d3). Sin `content/` aún, avisa y sale con éxito.
+- **Alternativas:** script vacío hasta la Fase 6 (peor señal en CI).
+
+### 8. Versiones exactas
+
+- **Contexto:** AGENTS §3 pide versiones exactas (`save-exact`).
+- **Decisión:** todas las dependencias están fijadas sin `^`. Verificadas con `npm view` el 12-10-2026.
+
+---
+
+## Preguntas abiertas del `instructions.md` (§21, depender de decisiones posteriores)
+
+| #   | Pregunta                   | Estado                                                  |
+| --- | -------------------------- | ------------------------------------------------------- |
+| 1   | Nombre definitivo y paleta | Pendiente (Fase 5, pulido)                              |
+| 2   | Modo gamberro opt-in       | Por defecto opt-in y desactivado (`ENABLE_ROWDY=false`) |
+| 3   | Historial SQLite en MVP    | No; v1.1                                                |
+| 4   | Audios para `nameThatTune` | Pendiente (v1.1)                                        |
+| 5   | Generación con Claude      | Opcional; requiere clave y revisión humana              |
+| 6   | Límite de jugadores        | 2–12, como el original (configurable)                   |

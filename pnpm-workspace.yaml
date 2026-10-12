@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm >= 11: allowBuilds reemplaza a onlyBuiltDependencies (ignorado desde v11).
+# Permitimos el postinstall de esbuild (dependencia de Vite) para su binario nativo.
+allowBuilds:
+  esbuild: true
+
+# Paquetes recientes aceptados explícitamente (comprobación minimumReleaseAge de pnpm).
+minimumReleaseAgeExclude:
+  - zod@4.6.6

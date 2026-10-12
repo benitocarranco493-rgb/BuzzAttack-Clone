@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+content/media
+
+# Documentos de especificación (se mantienen tal cual)
+AGENTS.md
+instructions.md
+LICENSE

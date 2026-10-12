@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Builds
+dist/
+coverage/
+.vite/
+
+# Variables de entorno (nunca versionar secretos)
+.env
+.env.*
+!.env.example
+*.local
+
+# Material multimedia del usuario (posible copyright; NO versionar)
+content/media/
+
+# Varios
+*.log
+.DS_Store
+.pnpm-store/

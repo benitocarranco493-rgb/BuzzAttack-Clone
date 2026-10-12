@@ -1,0 +1,12 @@
+services:
+  buzz-home:
+    build: .
+    container_name: buzz-home
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: '3000'
+      HOST: '0.0.0.0'
+      DEFAULT_LANG: es
+      ENABLE_ROWDY: 'false'
+    restart: unless-stopped
