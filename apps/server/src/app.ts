@@ -5,8 +5,9 @@ import { fileURLToPath } from 'node:url';
 import fastifyCors from '@fastify/cors';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyStatic from '@fastify/static';
-import { APP_NAME } from '@buzz/shared';
+import { APP_NAME, ROOM_CLEANUP_INTERVAL_MS } from '@buzz/shared';
 import type {
+  Category,
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
@@ -15,6 +16,10 @@ import type {
 import type { FastifyInstance } from 'fastify';
 import Fastify from 'fastify';
 import { Server } from 'socket.io';
+
+import { loadCategories } from './content/categories.js';
+import { RoomManager } from './rooms/RoomManager.js';
+import { registerSocketHandlers } from './sockets/handlers.js';
 
 const serverDir = path.dirname(fileURLToPath(import.meta.url));
 const webDistDir = path.resolve(serverDir, '../../web/dist');
@@ -25,6 +30,10 @@ export interface BuildAppOptions {
   withSockets?: boolean;
   /** Servir los estáticos del cliente web cuando exista apps/web/dist. */
   serveWeb?: boolean;
+  /** Categorías para las salas; por defecto se cargan de content/es/categories.json. */
+  categories?: Category[];
+  /** Gestor de salas inyectable (para tests deterministas). */
+  rooms?: RoomManager;
 }
 
 export interface BuiltApp {
@@ -63,14 +72,26 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<BuiltApp>
   if (withSockets) {
     io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
       app.server,
-      { serveClient: false },
+      {
+        serveClient: false,
+        ...(corsOrigins.length > 0 ? { cors: { origin: corsOrigins } } : {}),
+      },
     );
-    io.on('connection', (socket) => {
-      app.log.info({ socketId: socket.id }, 'socket connected');
-      socket.on('disconnect', (reason) => {
-        app.log.info({ socketId: socket.id, reason }, 'socket disconnected');
-      });
+
+    const categories = options.categories ?? (await loadCategories(app.log));
+    const roomsManager = options.rooms ?? new RoomManager({ categories });
+
+    registerSocketHandlers({
+      io,
+      rooms: roomsManager,
+      logger: app.log,
+      getClientIp: (socket) => socket.handshake.address,
     });
+
+    // Las salas caducan a las 3 h de inactividad; el timer no impide la salida del proceso.
+    const cleanupTimer = setInterval(() => roomsManager.cleanupExpired(), ROOM_CLEANUP_INTERVAL_MS);
+    cleanupTimer.unref();
+    app.addHook('onClose', () => clearInterval(cleanupTimer));
   }
 
   const staticEnabled = serveWeb && existsSync(webDistDir);
