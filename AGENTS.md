@@ -187,3 +187,5 @@ pnpm vitest run -t "nombre del test"   # un test concreto
 ---
 
 *Este archivo es documentación viva: si descubres una práctica que habría evitado un error, añádela aquí. En un monorepo se pueden añadir `AGENTS.md` anidados en `apps/server`, `apps/web` o `packages/shared`; el más cercano al archivo editado tiene prioridad.*
+
+Para los commits usa versionado 1.0.0 para la app con una descripción de las funcionalidades de cada commit. Cuando desarrolles completamente una funcionalidad me pedirás permiso para commitear con un nombre sugerido.
