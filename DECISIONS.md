@@ -86,6 +86,50 @@ Se actualiza cuando una decisión cambia el comportamiento o el "cómo se trabaj
 
 ---
 
+## 2026-10-12 — Fase 1: salas y lobby
+
+### 10. Cliente de sockets: singleton con reconexión + `ask()` con timeout
+
+- **Contexto:** los eventos con ack de Socket.IO pueden quedarse colgados si el servidor no
+  responde; `emitWithAck` sin timeout no falla nunca.
+- **Decisión:** `apps/web/src/socket/gameSocket.ts` crea un único `io(...)` con reconexión
+  automática (y `VITE_SERVER_URL` opcional para servidor remoto). Los ack usan
+  `apps/web/src/lib/ack.ts` (`ask`) que resuelve con error tipado `timeout` a los 5 s.
+- **Alternativas:** `socket.timeout().emitWithAck` (firmas más complejas con `exactOptionalPropertyTypes`);
+  Context de React para el socket (innecesario con un singleton simple).
+
+### 11. i18n propio mínimo (sin librería)
+
+- **Contexto:** AGENTS §5 exige textos vía i18n (`es` por defecto, `en` preparado) y cero cadenas
+  de UI en componentes.
+- **Decisión:** diccionario `apps/web/src/i18n/es.ts` + `t(clave, params)` con interpolación;
+  `en` declarado como `Partial<Record<Lang,…>>` con fallback automático a `es`.
+- **Alternativas:** `i18next`/`react-intl` (dependencias pesadas para ~70 claves en v1).
+
+### 12. Sesiones en `localStorage` con validación defensiva
+
+- **Contexto:** reconexión del host (`hostToken`) y del jugador (`playerToken`) tras recargar;
+  AGENTS §6 exige `try/catch`.
+- **Decisión:** claves `buzz-home:host-session` / `buzz-home:player-session`; lectura que valida
+  cada campo string (JSON corrupto ⇒ se ignora y se vuelve a unir). Borrar sesión en cualquier
+  error de token (`invalid_token`, `room_not_found`).
+
+### 13. Localización del `content/` con búsqueda hacia arriba
+
+- **Contexto:** el path fijo `../../../content/es/categories.json` resultaba `apps/content/...`
+  (bug real: las salas arrancaban con `availableCategories: []` y `categories:pick` rechazaba).
+  Reproducido primero con `categories.test.ts` (AGENTS §8) y corregido con `findCategoriesFile()`
+  que sube desde el módulo hasta 6 niveles buscando `content/es/categories.json`.
+- **Alternativas:** path fijo corregido a `../../../../` (frágil ante un futuro `dist/` del servidor).
+
+### 14. QR de unión
+
+- **Contexto:** instructions.md §7 pide código + QR para entrar desde el móvil.
+- **Decisión:** el host pinta `QRCodeSVG` con `${origin}/play?code=AAAA`; `/play` prelee el
+  parámetro en el campo de código. En dev el proxy de Vite (+ `/socket.io`) evita CORS.
+
+---
+
 ## Preguntas abiertas del `instructions.md` (§21, depender de decisiones posteriores)
 
 | #   | Pregunta                   | Estado                                                  |

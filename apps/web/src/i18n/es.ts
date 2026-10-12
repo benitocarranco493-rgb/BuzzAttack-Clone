@@ -1,0 +1,81 @@
+/**
+ * Diccionario de la app (es = idioma por defecto, instructions.md §19).
+ * Los componentes NUNCA escriben cadenas de UI: usan `t('clave')`.
+ */
+export const es = {
+  'app.tagline': 'Un juego de salón multijugador para casa.',
+  'app.homeLink': 'Inicio',
+
+  'home.hostLink': 'Pantalla del anfitrión',
+  'home.playLink': 'Unirme desde el móvil',
+  'home.phaseNotice': 'Fase 1: salas, equipos y categorías.',
+
+  'host.title': 'Pantalla del anfitrión',
+  'host.createRoom': 'Crear sala',
+  'host.creating': 'Creando sala…',
+  'host.reconnecting': 'Recuperando tu sala…',
+  'host.enterCode': 'Entra en la sala con el móvil',
+  'host.scanQr': 'Escanea el código QR',
+  'host.qrHint': 'Abre la cámara del móvil y toca el enlace para unirte.',
+  'host.roomCodeLabel': 'Código de la sala',
+  'host.playersTitle': 'Jugadores ({count}/{max})',
+  'host.teamsTitle': 'Podios',
+  'host.categoriesTitle': 'Categorías disponibles',
+  'host.start': 'Empezar partida',
+  'host.needPlayers': 'Faltan jugadores: {count} de {min}.',
+  'host.needCategories': 'Hay jugadores sin sus 3 categorías.',
+  'host.readyToStart': '¡Todo listo para empezar!',
+  'host.started': '¡La partida empieza!',
+
+  'play.title': 'Únete a la fiesta',
+  'play.codeLabel': 'Código de sala',
+  'play.codePlaceholder': 'ABCD',
+  'play.nicknameLabel': 'Tu apodo',
+  'play.nicknamePlaceholder': 'Ana',
+  'play.join': 'Entrar en la sala',
+  'play.joining': 'Uniendo…',
+  'play.reconnecting': 'Reconectando…',
+  'play.lobbyTitle': 'Sala {code}',
+  'play.yourPodium': 'Tu podio',
+  'play.teamsTitle': 'Elige tu podio (1–3 por equipo)',
+  'play.teamPlayers': '{count}/{max} jugadores',
+  'play.teamFull': 'Lleno',
+  'play.renameTeam': 'Renombrar mi equipo',
+  'play.saveName': 'Guardar nombre',
+  'play.namePlaceholder': 'Los Rojos',
+  'play.categoriesTitle': 'Tus 3 categorías',
+  'play.categoriesHint': 'Toca exactamente 3 categorías. Puedes cambiarlas mientras dure el lobby.',
+  'play.categoriesSelected': '{count} de 3 seleccionadas',
+  'play.categoriesSaved': '¡Categorías guardadas!',
+  'play.saveCategories': 'Guardar mis categorías',
+  'play.playersTitle': 'En la sala',
+
+  'common.connected': 'Conectado',
+  'common.disconnected': 'Sin conexión…',
+  'common.retry': 'Reintentar',
+  'common.dismiss': 'Entendido',
+  'common.waitingHost': 'Esperando a que el anfitrión empiece la partida…',
+
+  'error.unknown': 'Algo salió mal. Inténtalo de nuevo.',
+  'error.timeout': 'El servidor no responde. Revisa tu conexión.',
+  'error.room_not_found': 'Esa sala no existe o ha caducado.',
+  'error.room_full': 'La sala está llena (máximo 12 jugadores).',
+  'error.already_started': 'La partida ya ha empezado.',
+  'error.invalid_token': 'Tu sesión ya no es válida. Vuelve a unirte.',
+  'error.player_not_found': 'No se encontró tu jugador en la sala.',
+  'error.team_full': 'Ese podio ya tiene 3 jugadores. Elige otro.',
+  'error.team_not_found': 'Ese podio no existe.',
+  'error.invalid_categories': 'Elige 3 categorías válidas.',
+  'error.not_host': 'Solo el anfitrión puede hacer eso.',
+  'error.not_enough_players': 'Faltan jugadores para empezar.',
+  'error.categories_missing': 'Hay jugadores sin elegir sus 3 categorías.',
+  'error.invalid_payload': 'Datos inválidos.',
+  'error.invalid_nickname': 'El apodo debe tener entre 2 y 14 caracteres.',
+  'error.invalid_room_code': 'El código de sala tiene 4 letras.',
+  'error.rate_limited': 'Vas demasiado rápido. Espera un momento.',
+  'error.room_create_limit':
+    'Demasiadas salas creadas desde este dispositivo. Inténtalo más tarde.',
+} as const;
+
+export type Messages = typeof es;
+export type MessageKey = keyof Messages;

@@ -61,3 +61,375 @@ body {
   color: var(--text-dim);
   max-width: 42ch;
 }
+
+/* ------------------------------------------------------------------ */
+/* Componentes de la Fase 1 (salas y lobby)                            */
+/* ------------------------------------------------------------------ */
+
+.app-title--small {
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+}
+
+.home-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Accesibilidad: foco visible en todos los controles interactivos. */
+:focus-visible {
+  outline: 3px solid var(--neon-yellow);
+  outline-offset: 2px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 0.8rem 1.6rem;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--neon-magenta), var(--neon-cyan));
+  color: #0b0b12;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.btn--compact {
+  min-height: 48px;
+  padding: 0.4rem 1rem;
+  font-size: 0.95rem;
+}
+
+.input {
+  width: 100%;
+  min-height: 64px;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--text-dim);
+  border-radius: 14px;
+  background: #14141e;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.2rem;
+  touch-action: manipulation;
+}
+
+.input--code {
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.input--compact {
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+.field-label {
+  display: block;
+  text-align: left;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.join-form {
+  display: grid;
+  gap: 0.5rem;
+  width: min(24rem, 90vw);
+  text-align: left;
+}
+
+.join-form .btn {
+  margin-top: 0.8rem;
+}
+
+.lobby-shell {
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+  min-height: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem clamp(0.75rem, 3vw, 2.5rem) 3rem;
+  text-align: center;
+}
+
+.lobby-shell--mobile {
+  max-width: 32rem;
+}
+
+.lobby-shell h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.2rem;
+  color: var(--neon-yellow);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.lobby-header {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.lobby-header__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  color: var(--text-dim);
+}
+
+.connection-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  display: inline-block;
+}
+
+.connection-dot--on {
+  background: #3ecb6e;
+}
+
+.room-code {
+  margin: 0.2rem 0;
+  font-size: clamp(3rem, 12vw, 6rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--neon-yellow);
+  text-shadow: 0 0 24px var(--neon-magenta);
+}
+
+.join-panel {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+}
+
+.join-label {
+  margin: 0;
+  color: var(--neon-cyan);
+  font-weight: 700;
+}
+
+.teams-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+}
+
+.team-card {
+  margin: 0;
+}
+
+.team-button,
+.team-card__static {
+  display: grid;
+  gap: 0.15rem;
+  justify-items: center;
+  width: 100%;
+  min-height: 84px;
+  padding: 0.7rem 0.5rem;
+  border: 2px solid #23233a;
+  border-left-width: 6px;
+  border-radius: 14px;
+  background: #14141e;
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+}
+
+.team-button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.team-button--mine {
+  background: #1f1f31;
+  border-color: var(--neon-yellow);
+}
+
+.team-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.team-podium {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--neon-yellow);
+}
+
+.team-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.team-count {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.team-badge {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.team-rename {
+  margin-top: 0.5rem;
+}
+
+.rename-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+}
+
+.players-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.player-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: #14141e;
+  border: 1px solid #23233a;
+}
+
+.player-chip--offline {
+  opacity: 0.5;
+}
+
+.player-team {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.category-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: #14141e;
+  border: 2px solid #23233a;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.category-chip--button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.category-chip--selected {
+  border-color: var(--neon-cyan);
+  background: #10262c;
+  color: var(--neon-cyan);
+  font-weight: 700;
+}
+
+.error-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--neon-magenta);
+  border-radius: 14px;
+  background: #2a1120;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.start-panel {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+}
+
+.status--success {
+  color: #3ecb6e;
+  font-weight: 700;
+}
+
+/* Accesibilidad: contenido disponible solo para lectores de pantalla. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Respeta a usuarios con preferencia de movimiento reducido. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
